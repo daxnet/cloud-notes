@@ -1,0 +1,16 @@
+volumes:
+  postgres_data:
+services:
+  cloudnotes-pgsql:
+    image: daxnet/cloudnotes-pgsql
+    build:
+      context: ./postgres
+      dockerfile: Dockerfile
+    environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+        - POSTGRES_DB=cloudnotes
+    volumes:
+        - postgres_data:/data:Z
+    ports:
+        - "5432:5432"
