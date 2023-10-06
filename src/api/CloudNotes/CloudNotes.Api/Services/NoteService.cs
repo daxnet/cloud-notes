@@ -24,15 +24,24 @@ namespace CloudNotes.Api.Services
             }
 
             const string sql = "INSERT INTO notes (\"Title\", \"Content\", \"DateCreated\") VALUES (@Title, @Content, @DateCreated) RETURNING \"Id\"";
-            using var connection = new NpgsqlConnection(_connectionString);
+            await using var connection = new NpgsqlConnection(_connectionString);
             return await connection.ExecuteScalarAsync<int>(sql, note).ConfigureAwait(false);
         }
 
         public async Task<bool> DeleteNoteByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             const string sql = "DELETE FROM notes WHERE \"Id\"=@id";
-            using var connection = new NpgsqlConnection(_connectionString);
+            await using var connection = new NpgsqlConnection(_connectionString);
             var rowsAffected = await connection.ExecuteAsync(sql, new { id }).ConfigureAwait(false);
+            return rowsAffected > 0;
+        }
+
+        public async Task<bool> UpdateNoteAsync(int id, Note note, CancellationToken cancellationToken = default)
+        {
+            const string sql = "UPDATE notes SET \"Title\"=@Title, \"Content\"=@Content WHERE \"Id\"=@id";
+            await using var connection = new NpgsqlConnection(_connectionString);
+            var rowsAffected = await connection.ExecuteAsync(sql, new { note.Title, note.Content, id })
+                .ConfigureAwait(false);
             return rowsAffected > 0;
         }
 
@@ -59,13 +68,13 @@ namespace CloudNotes.Api.Services
                 }
             }
 
-            var limit = pageSize;
-            var offset = pageNumber * limit;
-            sqlBuilder.Append($"OFFSET {offset} LIMIT {limit}");
+            var offset = pageNumber * pageSize;
+            sqlBuilder.Append($"OFFSET {offset} LIMIT {pageSize}");
 
-            using var connection = new NpgsqlConnection(_connectionString);
+            await using var connection = new NpgsqlConnection(_connectionString);
             var allNotes = await connection.QueryAsync<NoteWithTotalCount>(sqlBuilder.ToString());
-            var totalCount = allNotes.FirstOrDefault()?.TotalCount ?? 0;
+            var noteWithTotalCounts = allNotes.ToList();
+            var totalCount = noteWithTotalCounts.FirstOrDefault()?.TotalCount ?? 0;
             var totalPages = Convert.ToInt32(Math.Ceiling(totalCount * 1.0F / pageSize));
 
             var result = new PagedResult<Note>()
@@ -76,7 +85,7 @@ namespace CloudNotes.Api.Services
                 TotalPages = totalPages
             };
 
-            result.Items.AddRange(allNotes);
+            result.Items.AddRange(noteWithTotalCounts);
 
             return result;
         }
@@ -84,7 +93,7 @@ namespace CloudNotes.Api.Services
         public async Task<Note?> GetNoteByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             const string sql = "SELECT * FROM notes WHERE \"Id\"=@Id";
-            using var connection = new NpgsqlConnection(_connectionString);
+            await using var connection = new NpgsqlConnection(_connectionString);
             return await connection.QuerySingleOrDefaultAsync<Note?>(sql, new { Id = id });
         }
     }

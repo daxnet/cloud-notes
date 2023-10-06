@@ -17,5 +17,7 @@ namespace CloudNotes.Api.Services
             CancellationToken cancellationToken = default);
 
         Task<bool> DeleteNoteByIdAsync(int id, CancellationToken cancellationToken = default);
+
+        Task<bool> UpdateNoteAsync(int id, Note note, CancellationToken cancellationToken = default);
     }
 }
