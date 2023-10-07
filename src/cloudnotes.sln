@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34024.191
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudNotes.Api", "api\CloudNotes.Api.csproj", "{37E8D7B6-403F-40C5-BB58-209269A7E7F9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "api", "api", "{65F77F79-F0FB-4E58-BD27-8E6D939C2BBA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "web", "web", "{E7846C0B-B03A-42D3-BC97-E4CA03183127}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudNotes.Web", "web\CloudNotes.Web.csproj", "{6AE4DF93-683B-4DBA-9D17-75304EC1D030}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{4392FB1B-AB68-4316-8F0A-D5B868C0B066}"
+	ProjectSection(SolutionItems) = preProject
+		..\docker\docker-compose.dev.yaml = ..\docker\docker-compose.dev.yaml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{37E8D7B6-403F-40C5-BB58-209269A7E7F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37E8D7B6-403F-40C5-BB58-209269A7E7F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37E8D7B6-403F-40C5-BB58-209269A7E7F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37E8D7B6-403F-40C5-BB58-209269A7E7F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AE4DF93-683B-4DBA-9D17-75304EC1D030}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AE4DF93-683B-4DBA-9D17-75304EC1D030}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AE4DF93-683B-4DBA-9D17-75304EC1D030}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AE4DF93-683B-4DBA-9D17-75304EC1D030}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{37E8D7B6-403F-40C5-BB58-209269A7E7F9} = {65F77F79-F0FB-4E58-BD27-8E6D939C2BBA}
+		{6AE4DF93-683B-4DBA-9D17-75304EC1D030} = {E7846C0B-B03A-42D3-BC97-E4CA03183127}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {731213AE-0CB7-4CAD-9237-E4C66F48AA6D}
+	EndGlobalSection
+EndGlobal

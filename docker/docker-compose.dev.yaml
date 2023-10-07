@@ -1,5 +1,6 @@
 volumes:
   postgres_data:
+  seq_data:
 services:
   cloudnotes-pgsql:
     image: daxnet/cloudnotes-pgsql
@@ -14,3 +15,11 @@ services:
         - postgres_data:/data:Z
     ports:
         - "5432:5432"
+  cloudnotes-seq:
+    image: datalust/seq
+    environment:
+        - ACCEPT_EULA=Y
+    volumes:
+        - seq_data:/data:Z
+    ports:
+        - "5341:80"
