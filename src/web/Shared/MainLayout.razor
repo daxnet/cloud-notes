@@ -1,24 +1,74 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="bb-page">
-
-    <Sidebar @ref="sidebar"
-             IconName="IconName.BootstrapFill"
-             Title="Blazor Bootstrap"
-             DataProvider="SidebarDataProvider" />
-
-    <main>
-        <div class="bb-top-row px-4 d-flex justify-content-end">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
-            <div class="py-2">
-                @Body
+<div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">CloudNotes</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Dropdown
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li>
+                                <a class="dropdown-item" href="#">Action</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">Another action</a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">Something else here</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                    </li>
+                </ul>
+                <form class="d-flex">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
             </div>
-        </article>
-    </main>
-
+        </div>
+    </nav>
+    <div class="container-fluid">
+        @* <Sidebar @ref="sidebar" *@
+        @*          IconName="IconName.BootstrapFill" *@
+        @*          Title="Blazor Bootstrap" *@
+        @*          DataProvider="SidebarDataProvider"/> *@
+        <div class="row">
+            <div class="col-4 p-1">
+                <NoteListComponent />
+            </div>
+            <div class="col-8 p-1">
+                <main>
+                            @* <div class="bb-top-row px-4 d-flex justify-content-end"> *@
+                            @*     <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a> *@
+                            @* </div> *@
+                
+                            <article class="content px-4">
+                                <div class="py-2">
+                                    @Body
+                                </div>
+                            </article>
+                        </main>
+            </div>
+        </div>
+    </div>
 </div>
 
 @code {
@@ -37,11 +87,12 @@
     {
         navItems = new List<NavItem>
         {
-            new NavItem { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match=NavLinkMatch.All},
-            new NavItem { Id = "2", Href = "/counter", IconName = IconName.PlusSquareFill, Text = "Counter"},
-            new NavItem { Id = "3", Href = "/fetchdata", IconName = IconName.Table, Text = "Fetch Data"},
+            new NavItem { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match = NavLinkMatch.All },
+            new NavItem { Id = "2", Href = "/counter", IconName = IconName.PlusSquareFill, Text = "Counter" },
+            new NavItem { Id = "3", Href = "/fetchdata", IconName = IconName.Table, Text = "Fetch Data" },
         };
 
         return navItems;
     }
+
 }
