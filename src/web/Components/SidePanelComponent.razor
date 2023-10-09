@@ -1,0 +1,89 @@
+﻿@using CloudNotes.Web.Models
+<div class="row p-2">
+    <div class="col-12">
+        <div class="d-grid gap-2">
+            <button type="button" class="btn btn-primary">Create a new note</button>
+        </div>
+    </div>
+</div>
+<div class="row p-2">
+    <div class="col-12">
+        @if (_notes?.Length > 0)
+        {
+            <NoteListComponent Notes="_notes"></NoteListComponent>
+        }
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 p-1">
+        <Pagination ActivePageNumber="1"
+                    TotalPages="15"
+                    DisplayPages="5"
+                    Size="PaginationSize.Small"
+                    FirstLinkIcon="IconName.ChevronDoubleLeft"
+                    PreviousLinkIcon="IconName.ChevronLeft"
+                    NextLinkIcon="IconName.ChevronRight"
+                    Alignment="Alignment.Center"
+                    LastLinkIcon="IconName.ChevronDoubleRight"/>
+    </div>
+</div>
+
+
+@code {
+    private NoteData[]? _notes;
+    private const int PageSize = 4;
+    private static readonly NoteData[]? AllNotes = new[]
+    {
+        new NoteData
+        {
+            Id = 1, Title = "This is a test note with a long title", Content = "Test note content", DateCreatedUtc = DateTime.UtcNow
+        },
+        new NoteData
+        {
+            Id = 2, Title = "This is another note", Content = "Another note content", DateCreatedUtc = DateTime.UtcNow.AddDays(-2), DateModifiedUtc = DateTime.UtcNow
+        },
+        new NoteData
+        {
+            Id = 3, Title = "This is the 3rd test note", Content = "This is the 3rd test note", DateCreatedUtc = DateTime.UtcNow
+        },
+        new NoteData
+        {
+            Id = 4, Title = "This is the forth test note", Content = "Note content", DateCreatedUtc = DateTime.UtcNow.AddDays(-6), DateModifiedUtc = DateTime.UtcNow
+        },
+        new NoteData
+        {
+            Id = 5, Title = "Fifth test note", Content = "Note content", DateCreatedUtc = DateTime.UtcNow
+        },
+        new NoteData
+        {
+            Id = 6, Title = "Sixth test note", Content = "Note content", DateCreatedUtc = DateTime.UtcNow.AddDays(-5), DateModifiedUtc = DateTime.UtcNow
+        },new NoteData
+        {
+            Id = 7, Title = "Seventh test note", Content = "Note content", DateCreatedUtc = DateTime.UtcNow
+        },
+        new NoteData
+        {
+            Id = 8, Title = "Eighth test note", Content = "Note content", DateCreatedUtc = DateTime.UtcNow.AddDays(-4), DateModifiedUtc = DateTime.UtcNow
+        },
+        new NoteData
+        {
+            Id = 9, Title = "The nineth", Content = "Note content", DateCreatedUtc = DateTime.UtcNow
+        },
+        new NoteData
+        {
+            Id = 10, Title = "Last test note", Content = "Note content", DateCreatedUtc = DateTime.UtcNow.AddDays(-3), DateModifiedUtc = DateTime.UtcNow
+        }
+    };
+
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+
+    private Task ReadPagedNotesAsync(int pageNumber)
+    {
+        var skip = (pageNumber - 1) * PageSize;
+        
+    }
+
+}
