@@ -14,25 +14,30 @@
         }
     </div>
 </div>
-<div class="row">
-    <div class="col-12 p-1">
-        <Pagination ActivePageNumber="1"
-                    TotalPages="15"
-                    DisplayPages="5"
-                    Size="PaginationSize.Small"
-                    FirstLinkIcon="IconName.ChevronDoubleLeft"
-                    PreviousLinkIcon="IconName.ChevronLeft"
-                    NextLinkIcon="IconName.ChevronRight"
-                    Alignment="Alignment.Center"
-                    LastLinkIcon="IconName.ChevronDoubleRight"/>
+@if (TotalPages > 1)
+{
+    <div class="row">
+        <div class="col-12 p-1">
+            <Pagination ActivePageNumber="@_currentPage"
+                        TotalPages="@TotalPages"
+                        DisplayPages="5"
+                        Size="PaginationSize.Small"
+                        FirstLinkIcon="IconName.ChevronDoubleLeft"
+                        PreviousLinkIcon="IconName.ChevronLeft"
+                        NextLinkIcon="IconName.ChevronRight"
+                        Alignment="Alignment.Center"
+                        LastLinkIcon="IconName.ChevronDoubleRight"
+                        PageChanged="OnPageChanged"/>
+        </div>
     </div>
-</div>
+}
 
 
 @code {
     private NoteData[]? _notes;
-    private const int PageSize = 4;
-    private static readonly NoteData[]? AllNotes = new[]
+    private const int PageSize = 15;
+    private int _currentPage = 1;
+    private static readonly NoteData[] AllNotes = new[]
     {
         new NoteData
         {
@@ -75,15 +80,25 @@
         }
     };
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        return base.OnInitializedAsync();
+        await ReadPagedNotesAsync(1);
     }
 
-    private Task ReadPagedNotesAsync(int pageNumber)
+    private async Task ReadPagedNotesAsync(int pageNumber)
     {
+        _currentPage = pageNumber;
         var skip = (pageNumber - 1) * PageSize;
-        
+        _notes = AllNotes.Skip(skip).Take(PageSize).ToArray();
+        await Task.Yield();
+    }
+
+    private int TotalPages => (int)Math.Ceiling(AllNotes.Length * 1.0 / PageSize);
+
+    private async Task OnPageChanged(int page)
+    {
+        _currentPage = page;
+        await ReadPagedNotesAsync(page);
     }
 
 }
