@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CloudNotes.Api.Controllers
 {
-    [Route("api/notes")]
+    [Route("notes")]
     [ApiController]
     public class NotesController : ControllerBase
     {

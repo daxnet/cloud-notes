@@ -2,19 +2,13 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+ENV ASPNETCORE_URLS=http://+:5275
+EXPOSE 5275
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS publish
 WORKDIR /src
-COPY ["CloudNotes.Api/CloudNotes.Api.csproj", "CloudNotes.Api/"]
-RUN dotnet restore "CloudNotes.Api/CloudNotes.Api.csproj"
 COPY . .
-WORKDIR "/src/CloudNotes.Api"
-RUN dotnet build "CloudNotes.Api.csproj" -c Release -o /app/build
-
-FROM build AS publish
-RUN dotnet publish "CloudNotes.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "CloudNotes.Api.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app

@@ -1,0 +1,55 @@
+volumes:
+  postgres_data:
+  seq_data:
+services:
+  cloudnotes-pgsql:
+    image: daxnet/cloudnotes-pgsql
+    build:
+      context: ./postgres
+      dockerfile: Dockerfile
+    environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+        - POSTGRES_DB=cloudnotes
+    volumes:
+        - postgres_data:/data:Z
+    ports:
+        - "5400:5432"
+  cloudnotes-seq:
+    image: datalust/seq
+    environment:
+        - ACCEPT_EULA=Y
+    volumes:
+        - seq_data:/data:Z
+    ports:
+        - "5500:80"
+  cloudnotes-api:
+    image: daxnet/cloudnotes-api
+    build:
+      context: ../src/api
+      dockerfile: Dockerfile
+    depends_on: 
+      - cloudnotes-pgsql
+      - cloudnotes-seq
+    environment:
+      - db__connectionString=User ID=postgres;Password=postgres;Host=cloudnotes-pgsql;Port=5432;Database=cloudnotes;Pooling=true;Connection Lifetime=0;
+      - Serilog__WriteTo__0__Name=Console
+      - Serilog__WriteTo__0__Args__outputTemplate=[{Timestamp:u}] [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}
+      - Serilog__WriteTo__1__Name=Seq
+      - Serilog__WriteTo__1__Args__serverUrl=http://cloudnotes-seq
+#    ports:
+#      - "5275:5275"
+  cloudnotes-web:
+    image: daxnet/cloudnotes-web
+    build:
+      context: ../src/web
+      dockerfile: Dockerfile
+#    ports:
+#      - "8088:80"
+  cloudnotes-nginx:
+    image: daxnet/cloudnotes-nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - 8080:80
