@@ -1,8 +1,14 @@
 ﻿@using CloudNotes.Web.Models
+@using System.Text.Json.Nodes
+@using System.Text.Json.Serialization
+@using System.Text.Json
+@inject IConfiguration Configuration
+@inject IHttpClientFactory ClientFactory
+
 <div class="row p-2">
     <div class="col-12">
         <div class="d-grid gap-2">
-            <button type="button" class="btn btn-primary">Create a new note</button>
+            <button type="button" class="btn btn-primary btn-sm"><Icon Name="IconName.PencilSquare" /> Create a new note</button>
         </div>
     </div>
 </div>
@@ -14,12 +20,12 @@
         }
     </div>
 </div>
-@if (TotalPages > 1)
+@if (_totalPages > 1)
 {
     <div class="row">
         <div class="col-12 p-1">
             <Pagination ActivePageNumber="@_currentPage"
-                        TotalPages="@TotalPages"
+                        TotalPages="@_totalPages"
                         DisplayPages="5"
                         Size="PaginationSize.Small"
                         FirstLinkIcon="IconName.ChevronDoubleLeft"
@@ -35,51 +41,10 @@
 
 @code {
     private NoteData[]? _notes;
-    private const int PageSize = 15;
+    private const int PageSize = 2;
     private int _currentPage = 1;
-    private static readonly NoteData[] AllNotes = new[]
-    {
-        new NoteData
-        {
-            Id = 1, Title = "This is a test note with a long title", Content = "Test note content", DateCreatedUtc = DateTime.UtcNow
-        },
-        new NoteData
-        {
-            Id = 2, Title = "This is another note", Content = "Another note content", DateCreatedUtc = DateTime.UtcNow.AddDays(-2), DateModifiedUtc = DateTime.UtcNow
-        },
-        new NoteData
-        {
-            Id = 3, Title = "This is the 3rd test note", Content = "This is the 3rd test note", DateCreatedUtc = DateTime.UtcNow
-        },
-        new NoteData
-        {
-            Id = 4, Title = "This is the forth test note", Content = "Note content", DateCreatedUtc = DateTime.UtcNow.AddDays(-6), DateModifiedUtc = DateTime.UtcNow
-        },
-        new NoteData
-        {
-            Id = 5, Title = "Fifth test note", Content = "Note content", DateCreatedUtc = DateTime.UtcNow
-        },
-        new NoteData
-        {
-            Id = 6, Title = "Sixth test note", Content = "Note content", DateCreatedUtc = DateTime.UtcNow.AddDays(-5), DateModifiedUtc = DateTime.UtcNow
-        },new NoteData
-        {
-            Id = 7, Title = "Seventh test note", Content = "Note content", DateCreatedUtc = DateTime.UtcNow
-        },
-        new NoteData
-        {
-            Id = 8, Title = "Eighth test note", Content = "Note content", DateCreatedUtc = DateTime.UtcNow.AddDays(-4), DateModifiedUtc = DateTime.UtcNow
-        },
-        new NoteData
-        {
-            Id = 9, Title = "The nineth", Content = "Note content", DateCreatedUtc = DateTime.UtcNow
-        },
-        new NoteData
-        {
-            Id = 10, Title = "Last test note", Content = "Note content", DateCreatedUtc = DateTime.UtcNow.AddDays(-3), DateModifiedUtc = DateTime.UtcNow
-        }
-    };
-
+    private int _totalPages = 0;
+    
     protected override async Task OnInitializedAsync()
     {
         await ReadPagedNotesAsync(1);
@@ -87,18 +52,23 @@
 
     private async Task ReadPagedNotesAsync(int pageNumber)
     {
+        var httpClient = ClientFactory.CreateClient("default");
+        var httpResponseMessage = await httpClient.GetAsync($"notes?sortField=DateCreated&sortOrder=1&pageSize={PageSize}&pageNumber={pageNumber - 1}");
+        httpResponseMessage.EnsureSuccessStatusCode();
+        var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
+        if (!string.IsNullOrEmpty(responseJson))
+        {
+            var responseObj = JsonNode.Parse(responseJson)?.AsObject();
+            _totalPages = responseObj?["totalPages"]?.AsValue().GetValue<int>() ?? 0;
+            var itemsJson = responseObj?["items"]?.ToJsonString() ?? "[]";
+            _notes = JsonSerializer.Deserialize<NoteData[]>(itemsJson);
+        }
         _currentPage = pageNumber;
-        var skip = (pageNumber - 1) * PageSize;
-        _notes = AllNotes.Skip(skip).Take(PageSize).ToArray();
-        await Task.Yield();
     }
-
-    private int TotalPages => (int)Math.Ceiling(AllNotes.Length * 1.0 / PageSize);
 
     private async Task OnPageChanged(int page)
     {
         _currentPage = page;
         await ReadPagedNotesAsync(page);
     }
-
 }

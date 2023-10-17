@@ -10,7 +10,7 @@
                     <h5 class="mb-1">@note.Title</h5>
                     @* <small>@note.DateCreatedUtc.ToLocalTime()</small> *@
                 </div>
-                <p class="mb-1">@note.Content</p>
+                <p class="mb-1">@note.DateCreatedUtc.ToLocalTime()</p>
                 @if (note.DateModifiedUtc.HasValue)
                 {
                     <small>@note.DateModifiedUtc.Value.ToLocalTime()</small>
