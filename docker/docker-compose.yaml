@@ -44,6 +44,8 @@ services:
     build:
       context: ../src/web
       dockerfile: Dockerfile
+    environment:
+      - SERVICE_URL=http://localhost:8080/api/
 #    ports:
 #      - "8088:80"
   cloudnotes-nginx:

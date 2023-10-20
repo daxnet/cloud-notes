@@ -41,7 +41,7 @@
 
 @code {
     private NoteData[]? _notes;
-    private const int PageSize = 2;
+    private const int PageSize = 15;
     private int _currentPage = 1;
     private int _totalPages = 0;
     
@@ -63,6 +63,7 @@
             var itemsJson = responseObj?["items"]?.ToJsonString() ?? "[]";
             _notes = JsonSerializer.Deserialize<NoteData[]>(itemsJson);
         }
+        
         _currentPage = pageNumber;
     }
 

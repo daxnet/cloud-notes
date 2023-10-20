@@ -1,0 +1,37 @@
+﻿@using TinyMCE.Blazor
+@using CloudNotes.Web.Models
+
+<EditForm Model="@NoteModel" OnSubmit="Submit">
+    <div class="row pb-1">
+        <div class="col-md-12">
+            <InputText class="form-control" @bind-Value="NoteModel!.Title"></InputText>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <Editor Field="() => NoteModel.Content"/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
+                <button class="btn btn-primary" type="submit"><Icon Name="IconName.Floppy"></Icon> Save</button>                
+            </div>
+            
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    public NoteData? NoteModel { get; set; }
+
+    protected override void OnInitialized()
+    {
+        NoteModel ??= new();
+    }
+
+    private void Submit()
+    {
+        
+    }
+}
