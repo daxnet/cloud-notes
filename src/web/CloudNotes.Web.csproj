@@ -23,6 +23,7 @@
   <ItemGroup>
     <Folder Include="wwwroot\css\fonts\" />
     <Folder Include="wwwroot\js\" />
+    <Folder Include="wwwroot\tinymce\" />
   </ItemGroup>
 
   <ItemGroup>

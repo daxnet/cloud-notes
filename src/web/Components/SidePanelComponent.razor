@@ -8,7 +8,7 @@
 <div class="row p-2">
     <div class="col-12">
         <div class="d-grid gap-2">
-            <button type="button" class="btn btn-primary btn-sm"><Icon Name="IconName.PencilSquare" /> Create a new note</button>
+            <button type="button" class="btn btn-primary btn-sm"><Icon Name="IconName.PencilSquare" /> 创建新的笔记</button>
         </div>
     </div>
 </div>
@@ -38,13 +38,20 @@
     </div>
 }
 
-
 @code {
     private NoteData[]? _notes;
     private const int PageSize = 15;
     private int _currentPage = 1;
     private int _totalPages = 0;
-    
+
+    [Inject] protected PreloadService? PreloadService { get; set; }
+
+    public async Task ReloadAsync()
+    {
+        await ReadPagedNotesAsync(_currentPage);
+        StateHasChanged();
+    }
+
     protected override async Task OnInitializedAsync()
     {
         await ReadPagedNotesAsync(1);
@@ -52,19 +59,28 @@
 
     private async Task ReadPagedNotesAsync(int pageNumber)
     {
-        var httpClient = ClientFactory.CreateClient("default");
-        var httpResponseMessage = await httpClient.GetAsync($"notes?sortField=DateCreated&sortOrder=1&pageSize={PageSize}&pageNumber={pageNumber - 1}");
-        httpResponseMessage.EnsureSuccessStatusCode();
-        var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
-        if (!string.IsNullOrEmpty(responseJson))
+        try
         {
-            var responseObj = JsonNode.Parse(responseJson)?.AsObject();
-            _totalPages = responseObj?["totalPages"]?.AsValue().GetValue<int>() ?? 0;
-            var itemsJson = responseObj?["items"]?.ToJsonString() ?? "[]";
-            _notes = JsonSerializer.Deserialize<NoteData[]>(itemsJson);
+            PreloadService?.Show();
+            var httpClient = ClientFactory.CreateClient("default");
+            var httpResponseMessage = await httpClient.GetAsync($"notes?sortField=DateCreated&sortOrder=1&pageSize={PageSize}&pageNumber={pageNumber - 1}");
+            httpResponseMessage.EnsureSuccessStatusCode();
+            var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
+            if (!string.IsNullOrEmpty(responseJson))
+            {
+                var responseObj = JsonNode.Parse(responseJson)?.AsObject();
+                _totalPages = responseObj?["totalPages"]?.AsValue().GetValue<int>() ?? 0;
+                var itemsJson = responseObj?["items"]?.ToJsonString() ?? "[]";
+                _notes = JsonSerializer.Deserialize<NoteData[]>(itemsJson);
+            }
+
+            _currentPage = pageNumber;
         }
-        
-        _currentPage = pageNumber;
+        finally
+        {
+            PreloadService?.Hide();
+        }
+
     }
 
     private async Task OnPageChanged(int page)

@@ -1,21 +1,22 @@
 ﻿@using TinyMCE.Blazor
 @using CloudNotes.Web.Models
+@inject IHttpClientFactory ClientFactory
 
 <EditForm Model="@NoteModel" OnSubmit="Submit">
     <div class="row pb-1">
         <div class="col-md-12">
-            <InputText class="form-control" @bind-Value="NoteModel!.Title"></InputText>
+            <InputText class="form-control" @bind-Value="NoteModel!.Title" placeholder="输入笔记标题"></InputText>
         </div>
     </div>
     <div class="row">
         <div class="col-md-12">
-            <Editor Field="() => NoteModel.Content"/>
+            <Editor Conf="@_tinyMceConf" ScriptSrc="/tinymce/tinymce.min.js" @bind-Value="NoteModel!.Content" Field="() => NoteModel!.Content" />
         </div>
     </div>
     <div class="row">
         <div class="col-md-12">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
-                <button class="btn btn-primary" type="submit"><Icon Name="IconName.Floppy"></Icon> Save</button>                
+                <button class="btn btn-primary" type="submit"><Icon Name="IconName.Floppy2Fill"></Icon> 保存</button>                
             </div>
             
         </div>
@@ -23,15 +24,72 @@
 </EditForm>
 
 @code {
+
+    [Inject]
+    protected ToastService? ToastService { get; set; }
+
+    [Inject]
+    protected ModalService? ModalService { get; set; }
+
+    [Parameter]
+    public EventCallback OnSaveSucceeded { get; set; }
+
     public NoteData? NoteModel { get; set; }
+
+    private Dictionary<string, object> _tinyMceConf = new()
+    {
+        { "menubar", "edit insert view format table" },
+        { "placeholder","输入笔记正文..." },
+        { "language","zh-Hans" },
+        { "promotion", false }
+    };
 
     protected override void OnInitialized()
     {
         NoteModel ??= new();
     }
 
-    private void Submit()
+    private async void Submit()
     {
-        
+        if (string.IsNullOrEmpty(NoteModel?.Title) || string.IsNullOrEmpty(NoteModel?.Content))
+        {
+            var modalOption = new ModalOption
+            {
+                Title = "笔记未保存",
+                Message = "请输入笔记标题和内容，两者缺一不可",
+                Type = ModalType.Warning,
+                FooterButtonColor = ButtonColor.Warning,
+                FooterButtonText = "确定"
+            };
+
+            await ModalService?.ShowAsync(modalOption)!;
+            return;
+        }
+
+        try
+        {
+            var httpClient = ClientFactory.CreateClient("default");
+            var response = await httpClient.PostAsJsonAsync("notes", new
+            {
+                title = NoteModel.Title,
+                content = NoteModel.Content
+            });
+            response.EnsureSuccessStatusCode();
+            ToastService?.Notify(CreateToastMessage(ToastType.Success, "成功", "笔记已成功保存！"));
+            await OnSaveSucceeded.InvokeAsync();
+        }
+        catch (Exception e)
+        {
+            ToastService?.Notify(CreateToastMessage(ToastType.Danger, "失败", e.Message));
+        }
     }
+
+    private ToastMessage CreateToastMessage(ToastType toastType, string title, string message)
+        => new ()
+        {
+            Type = toastType,
+            Title = title,
+            HelpText = $"{DateTime.Now}",
+            Message = message,
+        };
 }

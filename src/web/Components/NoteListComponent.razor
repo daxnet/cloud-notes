@@ -7,14 +7,9 @@
         {
             <a href="#" class="list-group-item list-group-item-action" aria-current="true">
                 <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1 p-md-1"><Icon Name="IconName.FileEarmarkText" />@note.Title</h5>
-                    @* <small>@note.DateCreatedUtc.ToLocalTime()</small> *@
+                    <h5 class="mb-1"><Icon Name="IconName.FileEarmarkText" />@note.Title</h5>
+                    <small>@note.DateCreatedRepresentation</small>
                 </div>
-                <p class="mb-1">@note.DateCreatedUtc.ToLocalTime()</p>
-                @if (note.DateModifiedUtc.HasValue)
-                {
-                    <small>@note.DateModifiedUtc.Value.ToLocalTime()</small>
-                }
             </a>
         }
     </ul>
